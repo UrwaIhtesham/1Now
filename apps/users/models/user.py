@@ -20,6 +20,7 @@ class CustomUserManager(BaseUserManager):
         return user
     
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True)
     email = models.EmailField(unique=True)              #unique identifier          #the primary login field as username not in the application
     mobile_number = models.CharField(max_length=15, blank=True, null=True)     #optional field
     is_active = models.BooleanField(default=True)       #can login
