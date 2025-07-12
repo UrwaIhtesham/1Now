@@ -21,7 +21,7 @@ class CustomUserManager(BaseUserManager):
     
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)              #unique identifier          #the primary login field as username not in the application
-    mobile_number = models.CharField(max_length=15)     #optional field
+    mobile_number = models.CharField(max_length=15, blank=True, null=True)     #optional field
     is_active = models.BooleanField(default=True)       #can login
     is_staff = models.BooleanField(default=False)
 
