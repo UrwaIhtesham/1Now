@@ -18,7 +18,7 @@ class LoginView(APIView):
             validate_email(email)
             validate_password(password)
         except DjangoValidationError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         
         user = authenticate(request, email=email, password=password)
 
