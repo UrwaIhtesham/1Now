@@ -19,6 +19,9 @@ class VehicleManagementTests(APITestCase):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
     
+    '''
+    FOR VEHICLE REGISTRATION
+    '''
     def test_valid_vehicle_registration(self):
         data = {
             "make": "Honda",
@@ -52,6 +55,48 @@ class VehicleManagementTests(APITestCase):
         response = self.client.post(self.url, data, format='json') 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    '''
+    FOR VEHICLE UPDATION
+    '''
 
+    def test_valid_vehicle_update(self):
+        vehicle = Vehicle.objects.create(
+            user = self.user,
+            make='Toyota',
+            model='Yaris',
+            year = 2002,
+            plate='abc-123'
+        )
+        url = f'/api/vehicle-update/{vehicle.id}/'
 
+        data= {
+            "make": "Honda",
+            "model": "City",
+            "year": 2002,
+            "plate": 'abc-123'
+        }
+        response = self.client.put(url, data, format='json', **self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        vehicle.refresh_from_db()
+        self.assertEqual(vehicle.make, "Honda")
+        self.assertEqual(vehicle.model, "City")
 
+    def test_invalid_vehicle_update(self):
+        vehicle = Vehicle.objects.create(
+            user = self.user,
+            make='Toyota',
+            model='Yaris',
+            year = 2002,
+            plate='abc-123'
+        )
+        url = f'/api/vehicles/{vehicle.id}/'
+
+        data= {
+            "make": "",
+            "model": "City",
+            "year": 2002,
+            "plate": 'abc-123'
+        }
+        response = self.client.put(url, data, format='json', **self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn('make', response.data or response.data.get('error'))

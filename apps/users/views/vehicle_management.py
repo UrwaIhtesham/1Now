@@ -12,10 +12,13 @@ class VehicleUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request, id):
+        #get the vehicle in the request or 404 error
         vehicle = get_object_or_404(Vehicle, id=id)
+        #if vehicle does not belong to the login user then throw error
         if vehicle.user != request.user:
             return Response({'error': 'You do not have permission to update this vehicle.'}, status= status.HTTP_403_FORBIDDEN)
         
+        #existing and new data
         serializer = VehicleSerializer(vehicle, data=request.data)
         if serializer.is_valid():
             serializer.save()
