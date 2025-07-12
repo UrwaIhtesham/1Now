@@ -89,7 +89,7 @@ class VehicleManagementTests(APITestCase):
             year = 2002,
             plate='abc-123'
         )
-        url = f'/api/vehicles/{vehicle.id}/'
+        url = f'/api/vehicle-update/{vehicle.id}/'
 
         data= {
             "make": "",
@@ -98,5 +98,42 @@ class VehicleManagementTests(APITestCase):
             "plate": 'abc-123'
         }
         response = self.client.put(url, data, format='json', **self.auth_header)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('make', response.data or response.data.get('error'))
+
+
+    '''
+    DELETE THE VEHICLE
+    '''
+
+    def test_valid_vehicle_delete(self):
+        vehicle = Vehicle.objects.create(
+            user=self.user,
+            make='Suzuki',
+            model='Mehran',
+            year = 2018,
+            plate='ABC-1234'
+        )
+        url = f'/api/delete-vehicle/{vehicle.id}/'
+
+        response = self.client.delete(url, **self.auth_header)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Vehicle.objects.count(), 0)
+
+    def test_invalid_unauthorised_vehicle_delete(self):
+        other_user = CustomUser.objects.create_user(email='ali@google.com', password="hello123!")
+        other_token = self.get_access_token(other_user)
+        other_auth_header = {'HTTP_AUTHORIZATION': f'Bearer {other_token}'}
+
+        vehicle=Vehicle.objects.create(
+            user=self.user,
+            make='Suzuki',
+            model='Mehran',
+            year = 2018,
+            plate='ABC-1234'
+        )
+        url = f'/api/delete-vehicle/{vehicle.id}/'
+        response = self.client.delete(url, **other_auth_header)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Vehicle.objects.count(), 1)
