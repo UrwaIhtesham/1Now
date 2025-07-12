@@ -7,7 +7,7 @@ from apps.users.models.vehicle import Vehicle
 from apps.users.serializers.vehicle_serializer import VehicleSerializer
 from django.shortcuts import get_object_or_404
 
-class VehicleUpdateView(APIView):
+class VehicleManagementView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -26,10 +26,6 @@ class VehicleUpdateView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class VehicleDeleteView(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-
     def delete(self, request, id):
         #get the vehicle object or return 404 error
         vehicle = get_object_or_404(Vehicle, id=id)
@@ -40,3 +36,5 @@ class VehicleDeleteView(APIView):
         
         vehicle.delete()
         return Response({'message': 'Vehicle deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+    

@@ -13,7 +13,7 @@ class VehicleManagementTests(APITestCase):
         )
         self.token = self.get_access_token(self.user)
         self.auth_header = {'HTTP_AUTHORIZATION': f'Bearer {self.token}'}
-        self.url = reverse('add-vehicle')
+        self.url = f'/api/vehicles/'
 
     def get_access_token(self, user):
         refresh = RefreshToken.for_user(user)
@@ -67,7 +67,7 @@ class VehicleManagementTests(APITestCase):
             year = 2002,
             plate='abc-123'
         )
-        url = f'/api/vehicle-update/{vehicle.id}/'
+        url = f'/api/vehicles/{vehicle.id}/'
 
         data= {
             "make": "Honda",
@@ -89,7 +89,7 @@ class VehicleManagementTests(APITestCase):
             year = 2002,
             plate='abc-123'
         )
-        url = f'/api/vehicle-update/{vehicle.id}/'
+        url = f'/api/vehicles/{vehicle.id}/'
 
         data= {
             "make": "",
@@ -114,7 +114,7 @@ class VehicleManagementTests(APITestCase):
             year = 2018,
             plate='ABC-1234'
         )
-        url = f'/api/delete-vehicle/{vehicle.id}/'
+        url = f'/api/vehicles/{vehicle.id}/'
 
         response = self.client.delete(url, **self.auth_header)
 
@@ -133,7 +133,31 @@ class VehicleManagementTests(APITestCase):
             year = 2018,
             plate='ABC-1234'
         )
-        url = f'/api/delete-vehicle/{vehicle.id}/'
+        url = f'/api/vehicles/{vehicle.id}/'
         response = self.client.delete(url, **other_auth_header)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Vehicle.objects.count(), 1)
+
+    '''
+    GET LISTING
+    '''
+    def test_valid_vehicle_listing(self):
+        vehicle=Vehicle.objects.create(
+            user=self.user,
+            make='Suzuki',
+            model='Mehran',
+            year = 2018,
+            plate='ABC-1234'
+        )
+        vehicle1=Vehicle.objects.create(
+            user=self.user,
+            make='Mercedes',
+            model='Benz',
+            year = 2020,
+            plate='XYZ-0987'
+        )
+
+        url= f'/api/vehicles/'
+        response = self.client.get(url, **self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
