@@ -41,7 +41,7 @@ Authorization: Bearer <access_token>
 
 ## API Endpoints
 1. User Management
-- Regiter a new user
+- **Regiter a new user**
 - POST method
 - /api/register/
 ```
@@ -51,8 +51,21 @@ Authorization: Bearer <access_token>
   "mobile_number": "03001234567"
 }
 ```
+```
+- Success Response: 201 created
+```
+{
+  "message": "User registered successfully"
+}
+```
+- Failure Response: 400 bad request
+```
+{
+  "email": ["Enter a valid email address."]
+}
+```
 
-- Login a user
+- **Login a user**
 - POST method
 - /api/login/
 ```
@@ -62,13 +75,22 @@ Authorization: Bearer <access_token>
 }
 ```
 ```
+- Success Response: 200 OK
+```
 {
-  "token": "<jwt_token_here>"
+  "access": "access_token",
+  "refresh": "refresh_token"
+}
+```
+- Failure Response: 401 Unauthorised
+```
+{
+  "error": "Invalid credentials"
 }
 ```
 
 2. Vehicle Management
-- Add a Vehicle
+- **Add a Vehicle**
 - POST method
 - /api/vehicles/
 ```
@@ -79,21 +101,81 @@ Authorization: Bearer <access_token>
   "plate": "ABC-123"
 }
 ```
+- Success Response: 201 Created
+```
+{
+  "id": 1,
+  "make": "Toyota",
+  "model": "Corolla",
+  "year": 2023,
+  "plate": "ABC-123",
+  "user": 5
+}
+```
+- Failure Response: 400 Bad Request
+- Response like this field may not be blank. 
 
-- Update vehicle info
+- **Update vehicle info**
 - PUT method
 - /api/vehicles/<id>/
+```
+{
+  "make": "Honda",
+  "model": "Civic",
+  "year": 2022,
+  "plate": "XYZ-999"
+}
+```
+- Success Response: 200 OK
+```
+{
+  "id": 1,
+  "make": "Honda",
+  "model": "Civic",
+  "year": 2022,
+  "plate": "XYZ-999",
+  "user": 5
+}
+```
+- Failure Response: 404 Not Found or 400 Bad Request
+- If vehicle id not present: 404
+- If missing fields: 400
 
-- Delete vehicle info
+- **Delete vehicle info**
 - DELETE method
 - /api/vehicles/<id>/
+- Success Response: 204 No Content
+```
+{
+  "message": "Vehicle deleted successfully"
+}
+```
+- Failure Response: 403 Forbidden
+```
+{
+  "error": "You do not have permission to delete this vehicle"
+}
+```
 
-- List the vehicles for the logged in user
+- **List the vehicles for the logged in user**
 - GET method
 - /api/vehicles/
+- Success Response: 200 OK
+```
+[
+  {
+    "id": 1,
+    "make": "Toyota",
+    "model": "Corolla",
+    "year": 2023,
+    "plate": "ABC-123",
+    "user": 5
+  }
+]
+```
 
 3. Booking Management
-- Book a vehicle
+- **Book a vehicle**
 - POST method
 - /api/bookings/
 ```
@@ -103,12 +185,52 @@ Authorization: Bearer <access_token>
   "end_date": "2025-08-05"
 }
 ```
+- Success Response: 201 Created
+```
+{
+  "id": 1,
+  "vehicle": 1,
+  "start_date": "2025-08-01",
+  "end_date": "2025-08-05",
+  "user": 5
+}
+```
+- Booking Overlap Error: 400 Bad Request
+```
+{
+  "error": "This vehicle is already booked during the selected period."
+}
+```
+- Data Validation Error: 400 Bad Request
+```
+{
+  "error": "Start date must be before end date."
+}
+```
 
-- List the Booking
+- **List the Booking**
 - GET method
 - /api/bookings/
 ```
 /api/bookings/?from=2025-07-01&to=2025-08-01
+```
+- Success Response: 200 OK
+```
+[
+  {
+    "id": 1,
+    "vehicle": 1,
+    "start_date": "2025-08-01",
+    "end_date": "2025-08-05",
+    "user": 5
+  }
+]
+```
+- Invalid Filter: 400 Bad Request
+```
+{
+  "error": "Invalid from date"
+}
 ```
 
 ## Running Unit Tests
@@ -134,7 +256,7 @@ python manage.py test apps.users.tests.test_vehicle_management
 It serves individuals or businesses looking for short or long term car rentals. By refering to 1Now, indivduals can maximise earnings, maintain control over their brand and manage bookings on their own terms.
 
 **Frontend Integration:**
-This backend provides a modular, secure, and well documented REST API, making it easy to integrate with the frontend such as the React or Next.js app powering LahoreCarRental.com. Use 'http://127.0.0.1:8000/api/{endpoint}/ in the frontend to call that api from the backend.
+This backend provides a modular, secure, and well documented REST API, making it easy to integrate with the frontend such as the React or Next.js app powering LahoreCarRental.com. Use 'http://127.0.0.1:8000/api/{endpoint}/' in the frontend to call that api from the backend.
 
 ## Assumptions
 - Vehicle owners and booking users are assumed to be the same for simplicity
