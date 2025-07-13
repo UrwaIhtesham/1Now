@@ -68,3 +68,7 @@ def validate_overlap(vehicle, start_date, end_date):
 
     if overlaps:
         raise ValidationError("This vehicle is already booked for the selected dates.")
+    
+'''
+BONUS TASKS VALIDATORS
+'''
