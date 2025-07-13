@@ -101,7 +101,7 @@ class BookingTests(APITestCase):
     FOR LIST BOOKINGS
     '''
 
-    def test_valid_bookings(self):
+    def test_valid_listing_bookings(self):
         # Create bookings for current user
         Booking.objects.create(
             user=self.user,
@@ -124,3 +124,66 @@ class BookingTests(APITestCase):
     def test_invalid_unauthorised_bookings(self):
         response = self.client.get(self.url, format='json') 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_valid_list_bookings_from(self):
+        Booking.objects.create(
+            user=self.user, 
+            vehicle=self.vehicle, 
+            start_date="2025-06-01", 
+            end_date="2025-06-05"
+        )
+        Booking.objects.create(
+            user=self.user, 
+            vehicle=self.vehicle, 
+            start_date="2025-07-10", 
+            end_date="2025-07-15"
+        )
+
+        url = f"{self.url}?from=2025-07-01"
+        response = self.client.get(url, format='json', **self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_valid_list_bookings_to(self):
+        Booking.objects.create(
+            user=self.user, 
+            vehicle=self.vehicle, 
+            start_date="2025-06-01", 
+            end_date="2025-06-05"
+        )
+        Booking.objects.create(
+            user=self.user, 
+            vehicle=self.vehicle, 
+            start_date="2025-07-10", 
+            end_date="2025-07-15"
+        )
+
+        url = f"{self.url}?to=2025-06-30"
+        response = self.client.get(url, format='json', **self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_valid_list_bookings_from_and_to(self):
+        Booking.objects.create(
+            user=self.user, 
+            vehicle=self.vehicle, 
+            start_date="2025-06-01", 
+            end_date="2025-06-05"
+        )
+        Booking.objects.create(
+            user=self.user, 
+            vehicle=self.vehicle, 
+            start_date="2025-07-10", 
+            end_date="2025-07-15"
+        )
+        Booking.objects.create(
+            user=self.user, 
+            vehicle=self.vehicle, 
+            start_date="2025-08-01", 
+            end_date="2025-08-05"
+        )
+
+        url = f"{self.url}?from=2025-07-01&to=2025-07-30"
+        response = self.client.get(url, format='json', **self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)

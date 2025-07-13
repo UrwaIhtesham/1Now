@@ -19,5 +19,20 @@ class BookingView(APIView):
     
     def get(self, request):
         bookings = Booking.objects.filter(user=request.user)
+        from_date = request.query_params.get('from')
+        to_date = request.query_params.get('to')
+
+        if from_date:
+            try:
+                bookings = bookings.filter(start_date__gte=from_date)
+            except ValueError:
+                return Response({"error": "Invalid from date"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if to_date:
+            try:
+                bookings = bookings.filter(end_date__lte=to_date)
+            except ValueError:
+                return Response({"error": "Invalid to date"}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = BookingSerializer(bookings, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
