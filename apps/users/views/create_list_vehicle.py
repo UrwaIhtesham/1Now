@@ -6,7 +6,7 @@ from apps.users.models.vehicle import Vehicle
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from apps.users.serializers.vehicle_serializer import VehicleSerializer
 
-class VehicleCreateView(APIView):
+class VehicleListCreateView(APIView):
     #the request should be bearing the jwt token or it will throw error
     authentication_classes = [JWTAuthentication]
     #only valid logged in users can access the api
@@ -19,3 +19,9 @@ class VehicleCreateView(APIView):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        #Fetched vehicles from the logged in user
+        vehicles = Vehicle.objects.filter(user=request.user)
+        serializer = VehicleSerializer(vehicles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
