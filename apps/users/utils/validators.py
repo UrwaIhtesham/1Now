@@ -1,5 +1,6 @@
 import re
 from django.core.exceptions import ValidationError
+from apps.users.models.booking import Booking
 
 '''
 FOR USER FIELDS
@@ -47,3 +48,23 @@ def validate_make(make):
 def validate_plate(plate):
     if not re.match(PLATE_REGEX, plate, re.IGNORECASE):
         raise ValidationError("Invalid plate format. Example: abc-1234")
+    
+'''
+FOR BOOKING FIELDS
+'''
+
+#helper function to validate start date and enddate
+def validate_dates(start_date, end_date):
+    if start_date > end_date:
+        raise ValidationError("Start date must be before end date.")
+
+#helper function to validate booking overlaps 
+def validate_overlap(vehicle, start_date, end_date):
+    overlaps = Booking.objects.filter(
+        vehicle=vehicle,
+        start_date__lte=end_date,
+        end_date__gte=start_date
+    ).exists()
+
+    if overlaps:
+        raise ValidationError("This vehicle is already booked for the selected dates.")

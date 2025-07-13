@@ -38,3 +38,4 @@ class VehicleManagementView(APIView):
         return Response({'message': 'Vehicle deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
     
+    
