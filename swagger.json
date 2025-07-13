@@ -1,0 +1,106 @@
+swagger: '2.0'
+info:
+  title: 1Now Car Rental API
+  description: Auto-generated API documentation for LahoreCarRental backend.
+  version: v1
+host: localhost:8000
+schemes:
+- http
+basePath: /api
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+- Basic: []
+paths:
+  /bookings/:
+    get:
+      operationId: bookings_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - bookings
+    post:
+      operationId: bookings_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - bookings
+    parameters: []
+  /login/:
+    post:
+      operationId: login_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - login
+    parameters: []
+  /register/:
+    post:
+      operationId: register_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - register
+    parameters: []
+  /vehicles/:
+    get:
+      operationId: vehicles_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - vehicles
+    post:
+      operationId: vehicles_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+      - vehicles
+    parameters: []
+  /vehicles/{id}/:
+    put:
+      operationId: vehicles_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+      - vehicles
+    delete:
+      operationId: vehicles_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+      - vehicles
+    parameters:
+    - name: id
+      in: path
+      required: true
+      type: string
+definitions: {}
