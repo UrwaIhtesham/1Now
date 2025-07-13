@@ -80,3 +80,47 @@ class BookingTests(APITestCase):
         }
         response = self.client.post(self.url, data, format='json') 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_invalid_id_booking(self):
+        data = {
+            "vehicle": 4,
+            "start_date": "2025-07-20",
+            "end_date": "2025-07-22"
+        }
+        response = self.client.post(self.url, data, format='json', **self.auth_header) 
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_missing_value_booking(self):
+        data = {
+            "end_date": "2025-07-22"
+        }
+        response = self.client.post(self.url, data, format='json', **self.auth_header) 
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    '''
+    FOR LIST BOOKINGS
+    '''
+
+    def test_valid_bookings(self):
+        # Create bookings for current user
+        Booking.objects.create(
+            user=self.user,
+            vehicle=self.vehicle,
+            start_date="2025-07-20",
+            end_date="2025-07-22"
+        )
+        Booking.objects.create(
+            user=self.user,
+            vehicle=self.vehicle,
+            start_date="2025-08-01",
+            end_date="2025-08-05"
+        )
+
+        response = self.client.get(self.url, format='json', **self.auth_header)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['vehicle'], self.vehicle.id)
+
+    def test_invalid_unauthorised_bookings(self):
+        response = self.client.get(self.url, format='json') 
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
