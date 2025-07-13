@@ -134,7 +134,7 @@ python manage.py test apps.users.tests.test_vehicle_management
 It serves individuals or businesses looking for short or long term car rentals. By refering to 1Now, indivduals can maximise earnings, maintain control over their brand and manage bookings on their own terms.
 
 **Frontend Integration:**
-This backend provides a modular, secure, and well documented REST API, making it easy to integrate with the frontend such as the React or Next.js app powering LahoreCarRental.com.
+This backend provides a modular, secure, and well documented REST API, making it easy to integrate with the frontend such as the React or Next.js app powering LahoreCarRental.com. Use 'http://127.0.0.1:8000/api/{endpoint}/ in the frontend to call that api from the backend.
 
 ## Assumptions
 - Vehicle owners and booking users are assumed to be the same for simplicity
